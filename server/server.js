@@ -51,6 +51,30 @@ const note = await Note.create({
 
 })
 
+app.put('/notes/:id', async (req, res)=>{
+    // Get the id off the url 
+    const noteId = req.params.id;
+    // Get the data of the req body 
+    const title = req.body.title;
+    const body = req.body.body;
+
+
+    // Find and update the record 
+   await Note.findByIdAndUpdate(noteId, {
+        title: title,
+        body:body,
+    });
+
+    // Find updated note 
+    const note = await Note.findById(noteId);
+    // Respond with it 
+    res.json({note:note})
+
+});
+
+
+
+
 app.get("/notes/:id", async (req, res)=>{
     // Get id of the url 
     const noteId = req.params.id;
@@ -61,6 +85,14 @@ app.get("/notes/:id", async (req, res)=>{
 })
 
 
+app.delete("/notes/:id", async(req, res)=>{
+    // get id of url 
+    const noteId = req.params.id;
+    // Delete the record 
+    await Note.deleteOne({id: noteId});
+    // Respond  
+    res.json({success: "Record deleted"});
+});
 
 // Start our server 
 app.listen(process.env.PORT);
