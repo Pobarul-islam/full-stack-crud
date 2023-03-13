@@ -1,7 +1,9 @@
 // Load env variables 
 
-if(process.env.NODE_ENV !="production"){
+if (process.env.NODE_ENV != "production") {
     require("dotenv").config();
+}else{
+    console.log("Error")
 }
 
 
@@ -23,35 +25,35 @@ app.use(express.json());
 connectToDb();
 
 // Routing 
-app.get("/", (req, res)=>{
-    res.json({Hello: "world"})
+app.get("/", (req, res) => {
+    res.json({ Hello: "world" })
 })
 
-app.get('/notes', async (req, res)=>{
+app.get('/notes', async (req, res) => {
     // Find the notes 
     const notes = await Note.find();
     // Respond with them 
-    res.json({notes:notes});
+    res.json({ notes: notes });
 })
 
 
-app.post('/notes', async (req, res)=>{
+app.post('/notes', async (req, res) => {
     // Get the sent in data of request body 
     const title = req.body.title;
     const body = req.body.body;
 
     // Create a note with it 
-const note = await Note.create({
-    title:title,
-    body:body,
+    const note = await Note.create({
+        title: title,
+        body: body,
 
-})
+    })
     // respond with the new note 
-    res.json({note:note});
+    res.json({ note: note });
 
 })
 
-app.put('/notes/:id', async (req, res)=>{
+app.put('/notes/:id', async (req, res) => {
     // Get the id off the url 
     const noteId = req.params.id;
     // Get the data of the req body 
@@ -60,38 +62,40 @@ app.put('/notes/:id', async (req, res)=>{
 
 
     // Find and update the record 
-   await Note.findByIdAndUpdate(noteId, {
+    await Note.findByIdAndUpdate(noteId, {
         title: title,
-        body:body,
+        body: body,
     });
 
     // Find updated note 
     const note = await Note.findById(noteId);
     // Respond with it 
-    res.json({note:note})
+    res.json({ note: note })
 
 });
 
 
 
 
-app.get("/notes/:id", async (req, res)=>{
+app.get("/notes/:id", async (req, res) => {
     // Get id of the url 
     const noteId = req.params.id;
     // Find the note using that id 
     const note = await Note.findById(noteId)
     // Respond with the note 
-    res.json({note:note})
+    res.json({ note: note })
 })
 
 
-app.delete("/notes/:id", async(req, res)=>{
-    // get id of url 
+app.delete("/notes/:_id", async (req, res) => {
+    // Get id of url 
     const noteId = req.params.id;
-    // Delete the record 
-    await Note.deleteOne({id: noteId});
-    // Respond  
-    res.json({success: "Record deleted"});
+
+    // Delete the Record 
+     await Note.deleteOne({ id: noteId });
+
+    // Respond 
+    res.json({ success: "Record deleted" });
 });
 
 // Start our server 
