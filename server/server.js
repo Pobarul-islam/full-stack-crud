@@ -11,7 +11,7 @@ if (process.env.NODE_ENV != "production") {
 // Import dependencies 
 const express = require("express");
 const connectToDb = require('./config/connectToDb');
-const Note = require("./models/note");
+const noteController = require("./controllers/notControllers");
 
 
 // Create an express app 
@@ -25,78 +25,13 @@ app.use(express.json());
 connectToDb();
 
 // Routing 
-app.get("/", (req, res) => {
-    res.json({ Hello: "world" })
-})
-
-app.get('/notes', async (req, res) => {
-    // Find the notes 
-    const notes = await Note.find();
-    // Respond with them 
-    res.json({ notes: notes });
-})
 
 
-app.post('/notes', async (req, res) => {
-    // Get the sent in data of request body 
-    const title = req.body.title;
-    const body = req.body.body;
-
-    // Create a note with it 
-    const note = await Note.create({
-        title: title,
-        body: body,
-
-    })
-    // respond with the new note 
-    res.json({ note: note });
-
-})
-
-app.put('/notes/:id', async (req, res) => {
-    // Get the id off the url 
-    const noteId = req.params.id;
-    // Get the data of the req body 
-    const title = req.body.title;
-    const body = req.body.body;
-
-
-    // Find and update the record 
-    await Note.findByIdAndUpdate(noteId, {
-        title: title,
-        body: body,
-    });
-
-    // Find updated note 
-    const note = await Note.findById(noteId);
-    // Respond with it 
-    res.json({ note: note })
-
-});
-
-
-
-
-app.get("/notes/:id", async (req, res) => {
-    // Get id of the url 
-    const noteId = req.params.id;
-    // Find the note using that id 
-    const note = await Note.findById(noteId)
-    // Respond with the note 
-    res.json({ note: note })
-})
-
-
-app.delete("/notes/:_id", async (req, res) => {
-    // Get id of url 
-    const noteId = req.params.id;
-
-    // Delete the Record 
-     await Note.deleteOne({ id: noteId });
-
-    // Respond 
-    res.json({ success: "Record deleted" });
-});
+app.get('/notes', noteController.fetchNotes)
+app.put('/notes/:id', noteController.fetchNote);
+app.post('/notes', noteController.createNote)
+app.get("/notes/:id",noteController.updateNote)
+app.delete("/notes/:_id",noteController.deleteNote);
 
 // Start our server 
 app.listen(process.env.PORT);
